@@ -3,8 +3,9 @@
 
 Provides consistent decorator handling for the Symfony2 Dependency Injection Container.
 
+## Usage
 
-## "Decorate this"-mode
+### "Decorate this"-mode
 
 In "decorate this"-mode you declare your decorators in the dependency at hand. A configuration example:
 
@@ -30,7 +31,7 @@ $iterator = new InfiniteIterator(
 );
 ```
 
-## "Decorate other" mode
+### "Decorate other" mode
 
 In "decorate other"-mode you declare the subjects you are decorating in the decorator definition itself. A configuration
 example:
@@ -58,7 +59,7 @@ $iterator = new InfiniteIterator(
 ```
 
 
-## Specifying priorities
+### Specifying priorities
 
 To control the order of decoration, setting a priority flag for the decorator is supported. Priority can be between
 `PHP_INT_MAX` and `-PHP_INT_MAX`, the default priority is `0`.
@@ -70,3 +71,7 @@ To control the order of decoration, setting a priority flag for the decorator is
     <tag name="decorator.decorate_other" service_id="iterator" priority="255"/>
 </service>
 ```
+
+## Credits
+
+Based on Dovydas Bartkevicius’ idea, with a bunch of input from Max Beutel.
