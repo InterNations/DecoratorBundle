@@ -1,4 +1,5 @@
-# DecoratorBundle for Symfony2
+# DecoratorBundle for Symfony2 [![Build Status](https://travis-ci.org/InterNations/DecoratorBundle.svg?branch=master)](https://travis-ci.org/InterNations/DecoratorBundle)
+
 
 Provides consistent decorator handling for the Symfony2 Dependency Injection Container.
 
