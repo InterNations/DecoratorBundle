@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service
+            id="decorator1"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator1</argument>
+            <argument type="service" id="__subject__"/>
+        </service>
+
+        <service
+            id="decorator2"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator2</argument>
+            <argument type="service" id="__subject__"/>
+        </service>
+
+        <service
+            id="decorator3"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator3</argument>
+            <argument type="service" id="__subject__"/>
+        </service>
+
+        <service
+            id="decorated"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated">
+            <argument>decorator</argument>
+            <tag name="decorator.decorate_this" decorator_id="decorator2" priority="255"/>
+            <tag name="decorator.decorate_this" decorator_id="decorator1" priority="254"/>
+            <tag name="decorator.decorate_this" decorator_id="decorator3" priority="256"/>
+        </service>
+    </services>
+</container>

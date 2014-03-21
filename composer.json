@@ -1,0 +1,24 @@
+{
+    "name": "internations/decorator-bundle",
+    "description": "Symfony2 bundle to handle decorators in the service containers",
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "internations/testing-component": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lars Strojny",
+            "email": "lars.strojny@internations.org"
+        }
+    ],
+    "autoload": {
+        "psr-0": {"InterNations\\Bundle\\DecoratorBundle\\": "src/"}
+    },
+    "require": {
+        "symfony/dependency-injection": "2.*",
+        "symfony/http-kernel": "2.*",
+        "symfony/security": "2.*",
+        "symfony/config": "2.*"
+    }
+}
