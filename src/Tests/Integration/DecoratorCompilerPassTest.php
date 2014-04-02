@@ -5,8 +5,10 @@ use InterNations\Bundle\DecoratorBundle\DependencyInjection\Compiler\Decorator\D
 use InterNations\Component\Testing\AbstractTestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\Compiler;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
@@ -137,6 +139,26 @@ class DecoratorCompilerPassTest extends AbstractTestCase
     public function testSingleDecorateOther()
     {
         $container = $this->createContainer('single-decorate-other.xml');
+
+        $decorated = $container->get('decorated');
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated
+        );
+        $this->assertSame('decorator', $decorated->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            $decorated->getWrapped()
+        );
+        $this->assertSame('inner', $decorated->getWrapped()->getName());
+
+        $this->assertSame('execute', $decorated->execute());
+    }
+
+    public function testDecorateDecoratedDefinition()
+    {
+        $container = $this->createContainer('decorate-decorated-definition.xml');
 
         $decorated = $container->get('decorated');
         $this->assertInstanceOf(
@@ -294,6 +316,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $loader->load($file);
 
         $compiler = new Compiler();
+        $compiler->addPass(new DecoratorDefinitionCompilerPass());
         $compiler->addPass(new DecoratorCompilerPass());
         $compiler->compile($container);
 
@@ -305,5 +328,17 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         eval($source);
 
         return new $className();
+    }
+}
+
+class DecoratorDefinitionCompilerPass implements CompilerPassInterface
+{
+    public function process(ContainerBuilder $container)
+    {
+        if ($container->hasDefinition('decorated_original')) {
+            $definition = new DefinitionDecorator('decorated_original');
+            $definition->setProperty('definitionDecorator', true);
+            $container->setDefinition('decorated', $definition);
+        }
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service
+            id="decorator"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorated_original"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated">
+            <argument>decorator</argument>
+        </service>
+    </services>
+</container>

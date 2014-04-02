@@ -6,6 +6,8 @@ use InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException;
 use InterNations\Bundle\DecoratorBundle\Inspector\DecoratorInspector;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Security\Core\Util\SecureRandom;
 
@@ -80,15 +82,25 @@ class DecoratorCompilerPass implements CompilerPassInterface
         }
     }
 
+    private function resolveClassName(ContainerBuilder $container, Definition $definition)
+    {
+        if ($definition instanceof DefinitionDecorator) {
+            return $this->resolveClassName($container, $container->getDefinition($definition->getParent()));
+        }
+
+        return $definition->getClass();
+    }
+
     private function processDecorator(ContainerBuilder $container, $serviceId, array $decorator)
     {
         $subjectDefinition = $container->getDefinition($serviceId);
         $decoratorDefinition = clone $container->getDefinition($decorator['decorator_id']);
 
         $sharedSupertypes = $this->inspector->inspectClassHierarchy(
-            $subjectDefinition->getClass(),
-            $decoratorDefinition->getClass()
+            $this->resolveClassName($container, $subjectDefinition),
+            $this->resolveClassName($container, $decoratorDefinition)
         );
+
         if (!$sharedSupertypes) {
             throw UnexpectedValueException::missingSharedSupertype(
                 $subjectDefinition->getClass(),
