@@ -134,7 +134,7 @@ class DecoratorCompilerPass implements CompilerPassInterface
             throw new InvalidArgumentException($errorMessage);
         }
 
-        $wrappedServiceId = $serviceId . $this->secureRandom->nextBytes(256);
+        $wrappedServiceId = $serviceId . base64_encode($this->secureRandom->nextBytes(256));
 
         $container->setDefinition($wrappedServiceId, $subjectDefinition);
 
