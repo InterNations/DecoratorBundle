@@ -1,6 +1,7 @@
 <?php
 namespace InterNations\Bundle\DecoratorBundle\Tests\Integration;
 
+use InterNations\Bundle\DecoratorBundle\Tagger\DecorationTagger;
 use InterNations\Bundle\DecoratorBundle\DependencyInjection\Compiler\Decorator\DecoratorCompilerPass;
 use InterNations\Component\Testing\AbstractTestCase;
 use Symfony\Component\Config\FileLocator;
@@ -304,16 +305,148 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertInstanceOf('IteratorIterator', $container->get('decorated'));
     }
 
+    public function testDecorateProgrammaticallySingle()
+    {
+        $container = $this->createContainer(
+            'decorate-programmatically.xml',
+            static function (ContainerBuilder $container) {
+                DecorationTagger::tag($container, 'decorated', 'decorator1');
+            }
+        );
+
+        $decorated = $container->get('decorated');
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated
+        );
+        $this->assertSame('decorator1', $decorated->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            $decorated->getWrapped()
+        );
+        $this->assertSame('inner', $decorated->getWrapped()->getName());
+
+        $this->assertSame('execute', $decorated->execute());
+    }
+
+    public function testDecorateProgrammaticallyTwice()
+    {
+        $container = $this->createContainer(
+            'decorate-programmatically.xml',
+            static function (ContainerBuilder $container) {
+                DecorationTagger::tag($container, 'decorated', 'decorator1');
+                DecorationTagger::tag($container, 'decorated', 'decorator2');
+            }
+        );
+
+        $decorated = $container->get('decorated');
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated
+        );
+        $this->assertSame('decorator1', $decorated->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated->getWrapped()
+        );
+        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            $decorated->getWrapped()->getWrapped()
+        );
+        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+
+        $this->assertSame('execute', $decorated->execute());
+    }
+
+    public function testDecorateProgrammaticallyTwiceWithPriority()
+    {
+        $container = $this->createContainer(
+            'decorate-programmatically.xml',
+            static function (ContainerBuilder $container) {
+                DecorationTagger::tag($container, 'decorated', 'decorator2', 2);
+                DecorationTagger::tag($container, 'decorated', 'decorator1', 1);
+            }
+        );
+
+        $decorated = $container->get('decorated');
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated
+        );
+        $this->assertSame('decorator2', $decorated->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated->getWrapped()
+        );
+        $this->assertSame('decorator1', $decorated->getWrapped()->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            $decorated->getWrapped()->getWrapped()
+        );
+        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+
+        $this->assertSame('execute', $decorated->execute());
+    }
+
+    public function testDecorateProgrammaticallyAndDeclarativeWithPriority()
+    {
+        $container = $this->createContainer(
+            'decorate-programmatically.xml',
+            static function (ContainerBuilder $container) {
+                DecorationTagger::tag($container, 'decorated2', 'decorator3', -1);
+                DecorationTagger::tag($container, 'decorated2', 'decorator1', 1);
+            }
+        );
+
+        $decorated = $container->get('decorated2');
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated
+        );
+        $this->assertSame('decorator1', $decorated->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated->getWrapped()
+        );
+        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            $decorated->getWrapped()->getWrapped()
+        );
+        $this->assertSame('decorator3', $decorated->getWrapped()->getWrapped()->getName());
+
+        $this->assertInstanceOf(
+            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            $decorated->getWrapped()->getWrapped()->getWrapped()
+        );
+        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getWrapped()->getName());
+
+        $this->assertSame('execute', $decorated->execute());
+    }
+
     /**
      * @param string $file
+     * @param callable $pass
      * @return ContainerInterface
      */
-    public function createContainer($file)
+    public function createContainer($file, callable $pass = null)
     {
         $container = new ContainerBuilder();
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Fixtures'));
         $loader->load($file);
+
+        if ($pass) {
+            $pass($container);
+        }
 
         $compiler = new Compiler();
         $compiler->addPass(new DecoratorDefinitionCompilerPass());

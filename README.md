@@ -72,6 +72,27 @@ To control the order of decoration, setting a priority flag for the decorator is
 </service>
 ```
 
+### Using the Bundle programmatically
+
+In cases where you want to reuse the decoration functionality outside of the XML config, you can use the following API
+in your Compiler Pass. Here is an example to add decorate service `common_service` with the decorator
+`special_decorator` and priority `255`.
+
+```php
+namespace …;
+
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use InterNations\Bundle\DecoratorBundle\Tagger\DecorationTagger;
+
+class MyCompilerPass implements CompilerPassInterface
+{
+    public function process(ContainerBuilder $container)
+    {
+        DecorationTagger::tag($container, 'common_service', 'special_decorator', 255);
+    }
+}
+```
+
 ## Credits
 
 Based on Dovydas Bartkevicius’ idea, with a bunch of input from Max Beutel.
