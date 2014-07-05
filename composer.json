@@ -16,9 +16,9 @@
         "psr-4": {"InterNations\\Bundle\\DecoratorBundle\\": "src/"}
     },
     "require": {
-        "symfony/dependency-injection": "2.*",
-        "symfony/http-kernel": "2.*",
-        "symfony/security": "2.*",
-        "symfony/config": "2.*"
+        "symfony/dependency-injection": "~2",
+        "symfony/http-kernel": "~2",
+        "symfony/security": "~2",
+        "symfony/config": "~2"
     }
 }
