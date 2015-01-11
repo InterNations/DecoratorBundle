@@ -1,4 +1,6 @@
 # DecoratorBundle for Symfony2
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/InterNations/DecoratorBundle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/InterNations/DecoratorBundle.svg?branch=master)](https://travis-ci.org/InterNations/DecoratorBundle) [![Dependency Status](https://www.versioneye.com/user/projects/53479c66fe0d0720b500007c/badge.png)](https://www.versioneye.com/user/projects/53479c66fe0d0720b500007c) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/InterNations/DecoratorBundle.svg)](http://isitmaintained.com/project/InterNations/DecoratorBundle "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/InterNations/DecoratorBundle.svg)](http://isitmaintained.com/project/InterNations/DecoratorBundle "Percentage of issues still open")
 
 Provides consistent decorator handling for the Symfony2 Dependency Injection Container.
