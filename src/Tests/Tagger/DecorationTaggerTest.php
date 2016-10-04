@@ -17,8 +17,8 @@ class DecorationTaggerTest extends AbstractTestCase
 
     public function setUp()
     {
-        $this->container = $this->getSimpleMock('Symfony\Component\DependencyInjection\ContainerBuilder');
-        $this->definition = $this->getSimpleMock('Symfony\Component\DependencyInjection\Definition');
+        $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerBuilder');
+        $this->definition = $this->createMock('Symfony\Component\DependencyInjection\Definition');
 
         $this->container
             ->expects($this->any())
@@ -83,7 +83,7 @@ class DecorationTaggerTest extends AbstractTestCase
     {
         $this->setExpectedException(
             'Symfony\Component\DependencyInjection\Exception\InvalidArgumentException',
-            'The service definition "service_id" does not exist.'
+            'You have requested a non-existent service "service_id".'
         );
         DecorationTagger::tag(new ContainerBuilder(), 'service_id', 'decorator_id');
     }
