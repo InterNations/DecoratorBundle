@@ -74,7 +74,7 @@ class DecoratorInspector
             );
         }
 
-        if (!in_array($parameter->getClass()->getName(), $typeHints)) {
+        if (!in_array($parameter->getClass()->getName(), $typeHints, true)) {
             return sprintf(
                 'Expected type hint for one of "%s" in %s::__construct() on position %d, got "%s"',
                 implode($typeHints, '", "'),

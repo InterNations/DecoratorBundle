@@ -1,8 +1,13 @@
 <?php
 namespace InterNations\Bundle\DecoratorBundle\Tests\Integration;
 
-use InterNations\Bundle\DecoratorBundle\Tagger\DecorationTagger;
 use InterNations\Bundle\DecoratorBundle\DependencyInjection\Compiler\Decorator\DecoratorCompilerPass;
+use InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException;
+use InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException;
+use InterNations\Bundle\DecoratorBundle\Tagger\DecorationTagger;
+use InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\DecoratableInterface;
+use InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated;
+use InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator;
 use InterNations\Component\Testing\AbstractTestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\Compiler;
@@ -21,8 +26,8 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 {
     public function testExceptionIsThrownIfNoIdIsSetInDecorateThis()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException',
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
             'Missing parameter "decorator_id" in tag named "decorator.decorate_this" for service "decorated"'
         );
         $this->createContainer('decorate-this-missing-id.xml');
@@ -30,8 +35,8 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
     public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateThis()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException',
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Decorator service "decorator" does not declare a constructor argument of type "service" with name "__subject__"'
         );
         $this->createContainer('decorate-this-missing-subject.xml');
@@ -42,17 +47,9 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $container = $this->createContainer('single-decorate-this.xml');
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator', 0, $decorated);
+        $this->assertUnwrappedDecorator('inner', 1, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -62,26 +59,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $container = $this->createContainer('double-decorate-this.xml');
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator2', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame(
-            'decorator1',
-            $decorated->getWrapped()->getName()
-        );
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator2', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator1', 1, $decorated);
+        $this->assertUnwrappedDecorator('inner', 2, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -92,37 +73,18 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
         $decorated = $container->get('decorated');
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator3', $decorated->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('decorator1', $decorated->getWrapped()->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator3', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('decorator1', 2, $decorated);
+        $this->assertUnwrappedDecorator('inner', 3, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
 
     public function testExceptionIsThrownIfNoIdIsSetInDecorateOther()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException',
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
             'Missing parameter "service_id" in tag named "decorator.decorate_other" for service "decorated"'
         );
         $this->createContainer('decorate-other-missing-id.xml');
@@ -130,8 +92,8 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
     public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateOther()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException',
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Decorator service "decorator" does not declare a constructor argument of type "service" with name "__subject__"'
         );
         $this->createContainer('decorate-this-missing-service.xml');
@@ -142,17 +104,9 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $container = $this->createContainer('single-decorate-other.xml');
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator', 0, $decorated);
+        $this->assertUnwrappedDecorator('inner', 1, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -162,17 +116,9 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $container = $this->createContainer('decorate-decorated-definition.xml');
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator', 0, $decorated);
+        $this->assertUnwrappedDecorator('inner', 1, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -182,26 +128,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $container = $this->createContainer('double-decorate-other.xml');
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator2', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame(
-            'decorator1',
-            $decorated->getWrapped()->getName()
-        );
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator2', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator1', 1, $decorated);
+        $this->assertUnwrappedDecorator('inner', 2, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -212,29 +142,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
         $decorated = $container->get('decorated');
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator3', $decorated->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('decorator1', $decorated->getWrapped()->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator3', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('decorator1', 2, $decorated);
+        $this->assertUnwrappedDecorator('inner', 3, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -245,43 +156,40 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
         $decorated = $container->get('decorated');
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator1', $decorated->getName());
+        $this->assertUnwrappedDecorator('decorator1', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('decorator3', 2, $decorated);
+        $this->assertUnwrappedDecorator('decorator4', 3, $decorated);
+        $this->assertUnwrappedDecorator('inner', 4, $decorated, Decorated::class);
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
+        $this->assertSame('execute', $decorated->execute());
+    }
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('decorator3', $decorated->getWrapped()->getWrapped()->getName());
+    public function testDecorateTenTimes()
+    {
+        $container = $this->createContainer('decorate-other-ten.xml');
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()->getWrapped()->getWrapped()
-        );
-        $this->assertSame('decorator4', $decorated->getWrapped()->getWrapped()->getWrapped()->getName());
+        $decorated = $container->get('decorated');
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator1', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('decorator3', 2, $decorated);
+        $this->assertUnwrappedDecorator('decorator4', 3, $decorated);
+        $this->assertUnwrappedDecorator('decorator5', 4, $decorated);
+        $this->assertUnwrappedDecorator('decorator6', 5, $decorated);
+        $this->assertUnwrappedDecorator('decorator7', 6, $decorated);
+        $this->assertUnwrappedDecorator('decorator8', 7, $decorated);
+        $this->assertUnwrappedDecorator('decorator9', 8, $decorated);
+        $this->assertUnwrappedDecorator('decorator10', 9, $decorated);
+        $this->assertUnwrappedDecorator('inner', 10, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
 
     public function testExceptionIfNoSharedSupertype()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException',
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
             '"SplFileInfo" ("decorator") is configured as a decorator for "Iterator" ("decorated") but do not share a common supertype. Implement a shared interface (e.g. by introducing "IteratorInterface") or extend a shared baseclass'
         );
 
@@ -290,10 +198,8 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
     public function testExceptionIfInvalidConstructorSignature()
     {
-        $this->setExpectedException(
-            'InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException',
-            'No constructor defined for class "stdClass"'
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('No constructor defined for class "stdClass"');
 
         $this->createContainer('decorate-invalid-constructor.xml');
     }
@@ -316,13 +222,13 @@ class DecoratorCompilerPassTest extends AbstractTestCase
 
         $decorated = $container->get('decorated');
         $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
+            Decorator::class,
             $decorated
         );
         $this->assertSame('decorator1', $decorated->getName());
 
         $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
+            Decorated::class,
             $decorated->getWrapped()
         );
         $this->assertSame('inner', $decorated->getWrapped()->getName());
@@ -341,23 +247,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         );
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator1', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator1', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('inner', 2, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -373,23 +266,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         );
 
         $decorated = $container->get('decorated');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator2', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator1', $decorated->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator2', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator1', 1, $decorated);
+        $this->assertUnwrappedDecorator('inner', 2, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -405,29 +285,11 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         );
 
         $decorated = $container->get('decorated2');
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated
-        );
-        $this->assertSame('decorator1', $decorated->getName());
 
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()
-        );
-        $this->assertSame('decorator2', $decorated->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator',
-            $decorated->getWrapped()->getWrapped()
-        );
-        $this->assertSame('decorator3', $decorated->getWrapped()->getWrapped()->getName());
-
-        $this->assertInstanceOf(
-            'InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated',
-            $decorated->getWrapped()->getWrapped()->getWrapped()
-        );
-        $this->assertSame('inner', $decorated->getWrapped()->getWrapped()->getWrapped()->getName());
+        $this->assertUnwrappedDecorator('decorator1', 0, $decorated);
+        $this->assertUnwrappedDecorator('decorator2', 1, $decorated);
+        $this->assertUnwrappedDecorator('decorator3', 2, $decorated);
+        $this->assertUnwrappedDecorator('inner', 3, $decorated, Decorated::class);
 
         $this->assertSame('execute', $decorated->execute());
     }
@@ -461,6 +323,30 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         eval($source);
 
         return new $className();
+    }
+
+    private function assertUnwrappedDecorator(
+        $expectedName,
+        $times,
+        DecoratableInterface $object,
+        $expectedClass = Decorator::class
+    )
+    {
+        for ($a = 0; $a < $times; $a++) {
+            $this->assertInstanceOf(
+                Decorator::class,
+                $object,
+                sprintf('Expected "%s" at level %d', Decorator::class, $a - 1)
+            );
+            $object = $object->getWrapped();
+        }
+
+        $this->assertInstanceOf(
+            $expectedClass,
+            $object,
+            sprintf('Expected "%s" at level %d', Decorator::class, $times)
+        );
+        $this->assertSame($expectedName, $object->getName(), 'At level ' . $times);
     }
 }
 

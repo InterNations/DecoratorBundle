@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service
+            id="decorator1"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator1</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator2"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator2</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator3"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator3</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator4"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator4</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator5"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator5</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator6"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator6</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator7"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator7</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator8"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator8</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator9"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator9</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorator10"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator"
+            public="false">
+            <argument>decorator10</argument>
+            <argument type="service" id="__subject__"/>
+            <tag name="decorator.decorate_other" service_id="decorated"/>
+        </service>
+
+        <service
+            id="decorated"
+            class="InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated">
+            <argument>decorator</argument>
+        </service>
+    </services>
+</container>

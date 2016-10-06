@@ -74,6 +74,7 @@ class DecoratorCompilerPass implements CompilerPassInterface
 
         foreach ($decorators as $serviceId => $serviceDecorators) {
 
+            $serviceDecorators = array_reverse($serviceDecorators);
             usort($serviceDecorators, [$this, 'sortDecoratorsByPriority']);
 
             foreach ($serviceDecorators as $serviceDecorator) {
@@ -150,6 +151,6 @@ class DecoratorCompilerPass implements CompilerPassInterface
     {
         static $default = ['priority' => 0];
 
-        return strcmp(array_merge($default, $left)['priority'], array_merge($default, $right)['priority']);
+        return strnatcmp(array_merge($default, $left)['priority'], array_merge($default, $right)['priority']);
     }
 }
