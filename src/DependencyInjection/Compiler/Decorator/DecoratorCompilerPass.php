@@ -1,8 +1,8 @@
 <?php
 namespace InterNations\Bundle\DecoratorBundle\DependencyInjection\Compiler\Decorator;
 
-use InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException;
 use InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException;
+use InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException;
 use InterNations\Bundle\DecoratorBundle\Inspector\DecoratorInspector;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -45,7 +45,10 @@ class DecoratorCompilerPass implements CompilerPassInterface
                     $decorators[$serviceId] = [];
                 }
 
-                $decorators[$serviceId][] = $decorateOther;
+                $decorators[$serviceId][] = array_merge(
+                    $decorateOther,
+                    ['tie_breaker' => count($decorators[$serviceId])]
+                );
             }
         }
 
@@ -67,14 +70,14 @@ class DecoratorCompilerPass implements CompilerPassInterface
 
                 $decorators[$subjectServiceId][] = [
                     'decorator_id' => $decoratorId,
-                    'priority'     => array_merge(['priority' => 0], $decoratorSubject)['priority'],
+                    'priority' => array_merge(['priority' => 0], $decoratorSubject)['priority'],
+                    'tie_breaker' => count($decorators[$subjectServiceId]),
                 ];
             }
         }
 
         foreach ($decorators as $serviceId => $serviceDecorators) {
 
-            $serviceDecorators = array_reverse($serviceDecorators);
             usort($serviceDecorators, [$this, 'sortDecoratorsByPriority']);
 
             foreach ($serviceDecorators as $serviceDecorator) {
@@ -151,6 +154,8 @@ class DecoratorCompilerPass implements CompilerPassInterface
     {
         static $default = ['priority' => 0];
 
-        return strnatcmp(array_merge($default, $left)['priority'], array_merge($default, $right)['priority']);
+        $result = strnatcmp(array_merge($default, $left)['priority'], array_merge($default, $right)['priority']);
+
+        return $result === 0 ? strnatcmp($right['tie_breaker'], $left['tie_breaker']) : $result;
     }
 }
