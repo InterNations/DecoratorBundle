@@ -9,19 +9,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Security\Core\Util\SecureRandom;
 
 class DecoratorCompilerPass implements CompilerPassInterface
 {
-    /** @var SecureRandom */
-    private $secureRandom;
-
     /** @var DecoratorInspector */
     private $inspector;
 
     public function __construct()
     {
-        $this->secureRandom = new SecureRandom();
         $this->inspector = new DecoratorInspector();
     }
 
@@ -138,7 +133,7 @@ class DecoratorCompilerPass implements CompilerPassInterface
             throw new InvalidArgumentException($errorMessage);
         }
 
-        $wrappedServiceId = $serviceId . base64_encode($this->secureRandom->nextBytes(256));
+        $wrappedServiceId = $serviceId . base64_encode(random_bytes(256));
 
         $container->setDefinition($wrappedServiceId, $subjectDefinition);
 

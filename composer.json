@@ -16,11 +16,11 @@
         "psr-4": {"InterNations\\Bundle\\DecoratorBundle\\": "src/"}
     },
     "require": {
-        "symfony/dependency-injection": "~2",
-        "symfony/expression-language": "~2",
-        "symfony/http-kernel": "~2",
-        "symfony/security": "~2",
-        "symfony/config": "~2",
+        "symfony/dependency-injection": "~3",
+        "symfony/expression-language": "~3",
+        "symfony/http-kernel": "~3",
+        "symfony/security": "~3",
+        "symfony/config": "~3",
         "php": ">=5.6"
     }
 }
