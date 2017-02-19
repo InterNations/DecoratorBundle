@@ -2,7 +2,7 @@
     "name": "internations/decorator-bundle",
     "description": "Symfony2 bundle to handle decorators in the service containers",
     "require-dev": {
-        "phpunit/phpunit": "*",
+        "phpunit/phpunit": "~6",
         "internations/testing-component": "dev-master"
     },
     "license": "MIT",

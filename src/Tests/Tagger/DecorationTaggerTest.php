@@ -81,10 +81,8 @@ class DecorationTaggerTest extends AbstractTestCase
 
     public function testTagInvalidService()
     {
-        $this->setExpectedException(
-            'Symfony\Component\DependencyInjection\Exception\InvalidArgumentException',
-            'You have requested a non-existent service "service_id".'
-        );
+        $this->expectException('Symfony\Component\DependencyInjection\Exception\InvalidArgumentException');
+        $this->expectExceptionMessage('You have requested a non-existent service "service_id".');
         DecorationTagger::tag(new ContainerBuilder(), 'service_id', 'decorator_id');
     }
 }
