@@ -21,6 +21,6 @@
         "symfony/http-kernel": "~3",
         "symfony/security": "~3",
         "symfony/config": "~3",
-        "php": "~7"
+        "php": "~7.1"
     }
 }
