@@ -1,9 +1,23 @@
-# DecoratorBundle for Symfony2
+# DecoratorBundle for Symfony
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/InterNations/DecoratorBundle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/InterNations/DecoratorBundle.svg?branch=master)](https://travis-ci.org/InterNations/DecoratorBundle) [![Dependency Status](https://www.versioneye.com/user/projects/53479c66fe0d0720b500007c/badge.png)](https://www.versioneye.com/user/projects/53479c66fe0d0720b500007c) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/InterNations/DecoratorBundle.svg)](http://isitmaintained.com/project/InterNations/DecoratorBundle "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/InterNations/DecoratorBundle.svg)](http://isitmaintained.com/project/InterNations/DecoratorBundle "Percentage of issues still open")
 
-Provides consistent decorator handling for the Symfony2 Dependency Injection Container.
+Provides consistent decorator handling for the Symfony Dependency Injection Container.
+
+## Installation
+
+For Symfony 3.3 up to 4:
+
+```bash
+composer require internations/decorator-bundle
+```
+
+For Symfony < 3.3:
+
+```bash
+composer require internations/decorator-bundle:~0
+```
 
 ## Usage
 
@@ -67,7 +81,6 @@ To control the order of decoration, setting a priority flag for the decorator is
 `PHP_INT_MAX` and `-PHP_INT_MAX`, the default priority is `0`.
 
 ```xml
-...
 <service id="infinite_iterator" class="InifiteIterator" public="false">
     <argument type="service" id="__subject__"/>
     <tag name="decorator.decorate_other" service_id="iterator" priority="255"/>
@@ -85,6 +98,7 @@ namespace …;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use InterNations\Bundle\DecoratorBundle\Tagger\DecorationTagger;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class MyCompilerPass implements CompilerPassInterface
 {
