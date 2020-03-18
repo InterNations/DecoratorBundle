@@ -10,11 +10,11 @@ use InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorated;
 use InterNations\Bundle\DecoratorBundle\Tests\Integration\Fixtures\Decorator;
 use InterNations\Component\Testing\AbstractTestCase;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
@@ -315,6 +315,10 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $compiler->addPass(new DecoratorCompilerPass());
         $compiler->compile($container);
 
+        if (!$container->isCompiled()) {
+            $container->compile();
+        }
+
         $dumper = new PhpDumper($container);
         $className = 'DecoratorTestServiceContainer' . rand();
             $source = $dumper->dump(['class' => $className]);
@@ -355,7 +359,7 @@ class DecoratorDefinitionCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if ($container->hasDefinition('decorated_original')) {
-            $definition = new DefinitionDecorator('decorated_original');
+            $definition = new ChildDefinition('decorated_original');
             $definition->setProperty('definitionDecorator', true);
             $container->setDefinition('decorated', $definition);
         }
