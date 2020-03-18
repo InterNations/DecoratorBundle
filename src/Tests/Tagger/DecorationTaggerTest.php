@@ -15,7 +15,7 @@ class DecorationTaggerTest extends AbstractTestCase
     /** @var Definition|MockObject */
     private $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerBuilder');
         $this->definition = $this->createMock('Symfony\Component\DependencyInjection\Definition');
@@ -27,7 +27,7 @@ class DecorationTaggerTest extends AbstractTestCase
             ->will($this->returnValue($this->definition));
     }
 
-    public function testTagService()
+    public function testTagService(): void
     {
         $this->definition
             ->expects($this->once())
@@ -42,7 +42,7 @@ class DecorationTaggerTest extends AbstractTestCase
         DecorationTagger::tag($this->container, 'service_id', 'decorator_service_id');
     }
 
-    public function testTagServiceWithPriority()
+    public function testTagServiceWithPriority(): void
     {
         $this->definition
             ->expects($this->once())
@@ -57,7 +57,7 @@ class DecorationTaggerTest extends AbstractTestCase
         DecorationTagger::tag($this->container, 'service_id', 'decorator_service_id', 255);
     }
 
-    public function testTagServiceTwice()
+    public function testTagServiceTwice(): void
     {
         $this->definition
             ->expects($this->once())
@@ -79,7 +79,7 @@ class DecorationTaggerTest extends AbstractTestCase
         DecorationTagger::tag($this->container, 'service_id', 'decorator_service_id');
     }
 
-    public function testTagInvalidService()
+    public function testTagInvalidService(): void
     {
         $this->expectException('Symfony\Component\DependencyInjection\Exception\InvalidArgumentException');
         $this->expectExceptionMessage('You have requested a non-existent service "service_id".');

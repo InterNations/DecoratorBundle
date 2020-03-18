@@ -4,10 +4,10 @@ namespace InterNations\Bundle\DecoratorBundle\DependencyInjection\Compiler\Decor
 use InterNations\Bundle\DecoratorBundle\Exception\InvalidArgumentException;
 use InterNations\Bundle\DecoratorBundle\Exception\UnexpectedValueException;
 use InterNations\Bundle\DecoratorBundle\Inspector\DecoratorInspector;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 
 class DecoratorCompilerPass implements CompilerPassInterface
@@ -83,7 +83,7 @@ class DecoratorCompilerPass implements CompilerPassInterface
 
     private function resolveClassName(ContainerBuilder $container, Definition $definition)
     {
-        if ($definition instanceof DefinitionDecorator) {
+        if ($definition instanceof ChildDefinition) {
             return $this->resolveClassName($container, $container->getDefinition($definition->getParent()));
         }
 

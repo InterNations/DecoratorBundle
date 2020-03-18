@@ -9,12 +9,12 @@ class DecoratorInspectorTest extends AbstractTestCase
     /** @var DecoratorInspector */
     private $inspector;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->inspector = new DecoratorInspector();
     }
 
-    public static function getHierarchies()
+    public static function getHierarchies(): array
     {
         return [
             [
@@ -79,7 +79,11 @@ class DecoratorInspectorTest extends AbstractTestCase
     }
 
     /** @dataProvider getHierarchies */
-    public function testValidCaseValidCaseDecoratorExtendingSharedBaseClass(array $sharedSupertypes, $subjectClassName, $decoratorClassName)
+    public function testValidCaseValidCaseDecoratorExtendingSharedBaseClass(
+        array $sharedSupertypes,
+        string $subjectClassName,
+        string $decoratorClassName
+    ): void
     {
         $this->assertSame(
             $sharedSupertypes,
@@ -87,12 +91,12 @@ class DecoratorInspectorTest extends AbstractTestCase
         );
     }
 
-    public function testInvalidCaseNoSharedSuperTypes()
+    public function testInvalidCaseNoSharedSuperTypes(): void
     {
         $this->assertEmpty($this->inspector->inspectClassHierarchy('SplFileInfo', 'Iterator'));
     }
 
-    public function testValidCaseInspectingConstructorParameter()
+    public function testValidCaseInspectingConstructorParameter(): void
     {
         $this->assertNull(
             $this->inspector->inspectConstructorParameter(
@@ -103,7 +107,7 @@ class DecoratorInspectorTest extends AbstractTestCase
         );
     }
 
-    public function testInvalidCaseNoTypeHint()
+    public function testInvalidCaseNoTypeHint(): void
     {
         $this->assertSame(
             'Missing one of type hint for "InterNations\Bundle\DecoratorBundle\Tests\Inspector\ValidCaseDecoratorExtendingDecoratedClass" for parameter $str at position 0 in InterNations\Bundle\DecoratorBundle\Tests\Inspector\ValidCaseDecoratorExtendingDecoratedClassDecorator::__construct()',
@@ -115,7 +119,7 @@ class DecoratorInspectorTest extends AbstractTestCase
         );
     }
 
-    public function testInvalidCaseNoConstructor()
+    public function testInvalidCaseNoConstructor(): void
     {
         $this->assertSame(
             'No constructor defined for class "stdClass"',
@@ -127,7 +131,7 @@ class DecoratorInspectorTest extends AbstractTestCase
         );
     }
 
-    public function testInvalidCaseParameterOutOfBounds()
+    public function testInvalidCaseParameterOutOfBounds(): void
     {
         $this->assertSame(
             'No parameter at position 1000 in InterNations\Bundle\DecoratorBundle\Tests\Inspector\ValidCaseDecoratorExtendingDecoratedClassDecorator::__construct()',
