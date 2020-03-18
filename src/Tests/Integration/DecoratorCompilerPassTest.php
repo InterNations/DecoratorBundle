@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 class DecoratorCompilerPassTest extends AbstractTestCase
 {
-    public function testExceptionIsThrownIfNoIdIsSetInDecorateThis()
+    public function testExceptionIsThrownIfNoIdIsSetInDecorateThis(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage(
@@ -33,7 +33,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-this-missing-id.xml');
     }
 
-    public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateThis()
+    public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateThis(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -42,7 +42,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-this-missing-subject.xml');
     }
 
-    public function testSingleDecorateThis()
+    public function testSingleDecorateThis(): void
     {
         $container = $this->createContainer('single-decorate-this.xml');
 
@@ -54,7 +54,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDoubleDecorateThis()
+    public function testDoubleDecorateThis(): void
     {
         $container = $this->createContainer('double-decorate-this.xml');
 
@@ -67,7 +67,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testTripleDecorateThis()
+    public function testTripleDecorateThis(): void
     {
         $container = $this->createContainer('triple-decorate-this-with-priority.xml');
 
@@ -81,7 +81,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testExceptionIsThrownIfNoIdIsSetInDecorateOther()
+    public function testExceptionIsThrownIfNoIdIsSetInDecorateOther(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage(
@@ -90,7 +90,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-other-missing-id.xml');
     }
 
-    public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateOther()
+    public function testExceptionIsThrownIfNoWrappedDeclarationIsFoundInDecorateOther(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -99,7 +99,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-this-missing-service.xml');
     }
 
-    public function testSingleDecorateOther()
+    public function testSingleDecorateOther(): void
     {
         $container = $this->createContainer('single-decorate-other.xml');
 
@@ -111,7 +111,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateDecoratedDefinition()
+    public function testDecorateDecoratedDefinition(): void
     {
         $container = $this->createContainer('decorate-decorated-definition.xml');
 
@@ -123,7 +123,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDoubleDecorateOther()
+    public function testDoubleDecorateOther(): void
     {
         $container = $this->createContainer('double-decorate-other.xml');
 
@@ -136,7 +136,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testTripleDecorateOther()
+    public function testTripleDecorateOther(): void
     {
         $container = $this->createContainer('triple-decorate-other-with-priority.xml');
 
@@ -150,7 +150,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateCombined()
+    public function testDecorateCombined(): void
     {
         $container = $this->createContainer('decorate-this-and-other.xml');
 
@@ -165,7 +165,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateTenTimes()
+    public function testDecorateTenTimes(): void
     {
         $container = $this->createContainer('decorate-other-ten.xml');
 
@@ -186,7 +186,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testExceptionIfNoSharedSupertype()
+    public function testExceptionIfNoSharedSupertype(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage(
@@ -196,7 +196,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-no-shared-supertype.xml');
     }
 
-    public function testExceptionIfInvalidConstructorSignature()
+    public function testExceptionIfInvalidConstructorSignature(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No constructor defined for class "stdClass"');
@@ -204,14 +204,14 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->createContainer('decorate-invalid-constructor.xml');
     }
 
-    public function testDecorateInternalClasses()
+    public function testDecorateInternalClasses(): void
     {
         $container = $this->createContainer('decorate-internal-classes.xml');
 
         $this->assertInstanceOf('IteratorIterator', $container->get('decorated'));
     }
 
-    public function testDecorateProgrammaticallySingle()
+    public function testDecorateProgrammaticallySingle(): void
     {
         $container = $this->createContainer(
             'decorate-programmatically.xml',
@@ -236,7 +236,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateProgrammaticallyTwice()
+    public function testDecorateProgrammaticallyTwice(): void
     {
         $container = $this->createContainer(
             'decorate-programmatically.xml',
@@ -255,7 +255,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateProgrammaticallyTwiceWithPriority()
+    public function testDecorateProgrammaticallyTwiceWithPriority(): void
     {
         $container = $this->createContainer(
             'decorate-programmatically.xml',
@@ -274,7 +274,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    public function testDecorateProgrammaticallyAndDeclarativeWithPriority()
+    public function testDecorateProgrammaticallyAndDeclarativeWithPriority(): void
     {
         $container = $this->createContainer(
             'decorate-programmatically.xml',
@@ -294,12 +294,7 @@ class DecoratorCompilerPassTest extends AbstractTestCase
         $this->assertSame('execute', $decorated->execute());
     }
 
-    /**
-     * @param string $file
-     * @param callable $pass
-     * @return ContainerInterface
-     */
-    public function createContainer($file, callable $pass = null)
+    public function createContainer(string $file, callable $pass = null): ContainerInterface
     {
         $container = new ContainerBuilder();
 
