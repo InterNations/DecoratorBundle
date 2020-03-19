@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class DecoratorCompilerPass implements CompilerPassInterface
 {
+    private static $uniqueIndex = 0;
+
     /** @var DecoratorInspector */
     private $inspector;
 
@@ -133,7 +135,7 @@ class DecoratorCompilerPass implements CompilerPassInterface
             throw new InvalidArgumentException($errorMessage);
         }
 
-        $wrappedServiceId = $serviceId . base64_encode(random_bytes(256));
+        $wrappedServiceId = $serviceId . self::getUniqueServiceSuffix();
 
         $container->setDefinition($wrappedServiceId, $subjectDefinition);
 
@@ -152,5 +154,10 @@ class DecoratorCompilerPass implements CompilerPassInterface
         $result = strnatcmp(array_merge($default, $left)['priority'], array_merge($default, $right)['priority']);
 
         return $result === 0 ? strnatcmp($right['tie_breaker'], $left['tie_breaker']) : $result;
+    }
+
+    private static function getUniqueServiceSuffix(): string
+    {
+        return 'DecoratorBundle' . self::$uniqueIndex++;
     }
 }
