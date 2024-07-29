@@ -5,7 +5,7 @@ use InvalidArgumentException as BaseInvalidArgumentException;
 
 class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface
 {
-    public static function missingContainerConstructorArgument($decoratorServiceId, $type, $name)
+    public static function missingContainerConstructorArgument($decoratorServiceId, $type, $name):InvalidArgumentException
     {
         return new static(
             sprintf(

@@ -7,7 +7,7 @@ Provides consistent decorator handling for the Symfony Dependency Injection Cont
 
 ## Installation
 
-For Symfony 3.3 up to 4:
+For Symfony 3.3 up to 5:
 
 ```bash
 composer require internations/decorator-bundle
