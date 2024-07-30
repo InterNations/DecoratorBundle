@@ -22,5 +22,6 @@
         "symfony/security": "~3 | ~4",
         "symfony/config": "~3 | ~4",
         "php": "~7.1"
-    }
+    },
+    "abandoned": true
 }
